@@ -8,40 +8,10 @@ import peppy
 # FUNCTIONS #
 #############
 
-def resolve_path(x):
-    return(str(pathlib2.Path(x).resolve(strict=False)))
-
-def find_read_files(read_dir):
-#Make list of files
-    path_generator = os.walk(read_dir, followlinks = True)
-    my_files = list((dirpath, filenames)
-        for (dirpath, dirname, filenames)
-        in path_generator)
-#Make new dictionary & populate with files (flowcell = key)
-    my_fastq_files = {}
-    for dirpath, filenames in my_files:
-        for filename in filenames:
-            if filename.endswith('.fastq.gz'):
-                my_flowcell = pathlib2.Path(dirpath).name
-                my_fastq = str(pathlib2.Path(dirpath,filename))
-                if my_flowcell in my_fastq_files:
-                    my_fastq_files[my_flowcell].append(my_fastq)
-                else:
-                    my_fastq_files[my_flowcell]= []
-                    my_fastq_files[my_flowcell].append(my_fastq)
-    return(my_fastq_files)
-
-def sample_name_to_fastq(wildcards):
-    sample_row = sample_key[sample_key['Sample_name'] == wildcards.sample]
-    sample_id = sample_row.iloc[-1]['OGF_sample_ID']
-    sample_flowcell = sample_row.iloc[-1]['Flow_cell']
-    sample_all_fastq = [x for x in all_fastq[sample_flowcell]
-                        if '-{}-'.format(sample_id) in x]
-    sample_r1 = sorted(list(x for x in sample_all_fastq
-                            if '_R1_' in os.path.basename(x)))
-    sample_r2 = sorted(list(x for x in sample_all_fastq
-                            if '_R2_' in os.path.basename(x)))
-    return({'r1': sample_r1, 'r2': sample_r2})
+def get_reads(wildcards):
+    input_keys = ['l1r1', 'l2r1', 'l1r2', 'l2r2']
+    my_pep = pep.get_sample(wildcards.sample).to_dict()
+    return {k: my_pep[k] for k in input_keys}
 
 ###########
 # GLOBALS #
@@ -50,11 +20,7 @@ def sample_name_to_fastq(wildcards):
 ##this parses the config & sample key files into an object named pep
 pepfile: 'data/config.yaml'
 ##can now use this to generate list of all samples
-all_samples=pep.sample_table['sample_name']
-
-
-read_dir = 'data/reads'
-sample_key_file = 'data/sample_key.csv'
+all_samples = pep.sample_table['sample_name']
 
 #containers
 bbduk_container = 'shub://TomHarrop/singularity-containers:bbmap_38.00'
@@ -216,19 +182,17 @@ rule bbduk_trim:
         'ktrim=r k=23 mink=11 hdist=1 tpe tbo qtrim=r trimq=15 '
         '&> {log}'
 
-rule cat_reads:
+rule join_reads:
     input:
-        unpack(sample_name_to_fastq)
-    output: 
+        unpack(get_reads)
+    output:
         r1 = temp('output/joined/{sample}_r1.fq.gz'),
-        r2 = temp('output/joined/{sample}_r2.fq.gz')
-    threads:
-        1
+        r2 = temp('output/joined/{sample}_r2.fq.gz'),
     shell:
-        'cat {input.l1r1} {input.l2r1} > {output.r1} & '
-        'cat {input.l1r2} {input.l2r2} > {output.r2} & '
+        'zcat {input.l1r1} {input.l2r1} >> {output.r1} & '
+        'zcat {input.l1r2} {input.l2r2} >> {output.r2} & '
         'wait'
 
-##OG file with seuqencing for this project in different structure - two folders
+##OG file with sequencing for this project in different structure - two folders
 ##folder with small files is a small miseq run
 ##folder with large files are standard hiseq files to be used for analysis

@@ -1,13 +1,14 @@
 pep_version: 2.0.0
-##this needs to be relative to where config.yaml file is
 sample_table: "sample_table.csv"
 sample_modifiers:
-  ##derive the file paths for all my files using variables from sample_table as below
   derive:
-    ##define what columns of the sample_table should be derived - use to derive filepaths
-    attributes: [r1, r2]
-    ##how to derive columns/file paths using variables in sample_table
-    ##can use * as wildcard when multiple files per sample e.g. sample sequenced over 2 lanes
+    attributes: [l1r1, 'l2r1', 'l1r2', 'l2r2']
     sources:
-      data_r1: "data/reads/{OGF_lib_ID}_L00*/{OGF_lib_ID}_S1_L00*_R1_001.fastq.gz"
-      data_r2: "data/reads/{OGF_lib_ID}_L00*/{OGF_lib_ID}_S1_L00*_R2_001.fastq.gz"
+      data1: 'data/reads/HJFFNBCX3/{OGF_lib_ID}_L001-ds.{lane1_hash}/{OGF_lib_ID}_S1_L001_R1_001.fastq.gz'
+      data2: 'data/reads/HJFFNBCX3/{OGF_lib_ID}_L002-ds.{lane2_hash}/{OGF_lib_ID}_S1_L002_R1_001.fastq.gz'
+      data3: 'data/reads/HJFFNBCX3/{OGF_lib_ID}_L001-ds.{lane1_hash}/{OGF_lib_ID}_S1_L001_R2_001.fastq.gz'
+      data4: 'data/reads/HJFFNBCX3/{OGF_lib_ID}_L002-ds.{lane2_hash}/{OGF_lib_ID}_S1_L002_R2_001.fastq.gz'
+### sample_table needs to be relative to where config.yaml file is
+##derive = get the file paths for all my files using variables from sample_table as below
+##attributes defines what columns of the sample_table should be derived - use to derive filepaths
+##sources - how to derive columns/file paths using variables in sample_table
