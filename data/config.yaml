@@ -1,0 +1,13 @@
+pep_version: 2.0.0
+##this needs to be relative to where config.yaml file is
+sample_table: "sample_table.csv"
+sample_modifiers:
+  ##derive the file paths for all my files using variables from sample_table as below
+  derive:
+    ##define what columns of the sample_table should be derived - use to derive filepaths
+    attributes: [r1, r2]
+    ##how to derive columns/file paths using variables in sample_table
+    ##can use * as wildcard when multiple files per sample e.g. sample sequenced over 2 lanes
+    sources:
+      data_r1: "data/reads/{OGF_lib_ID}_L00*/{OGF_lib_ID}_S1_L00*_R1_001.fastq.gz"
+      data_r2: "data/reads/{OGF_lib_ID}_L00*/{OGF_lib_ID}_S1_L00*_R2_001.fastq.gz"

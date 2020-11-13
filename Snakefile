@@ -2,6 +2,7 @@
 import pathlib2
 import os
 import pandas
+import peppy
 
 #############
 # FUNCTIONS #
@@ -46,13 +47,14 @@ def sample_name_to_fastq(wildcards):
 # GLOBALS #
 ###########
 
+##this parses the config & sample key files into an object named pep
+pepfile: 'data/config.yaml'
+##can now use this to generate list of all samples
+all_samples=pep.sample_table['sample_name']
+
+
 read_dir = 'data/reads'
-
 sample_key_file = 'data/sample_key.csv'
-
-bbduk_adapters = '/adapters.fa'
-
-star_reference_folder = 'output/star/star_reference'
 
 #containers
 bbduk_container = 'shub://TomHarrop/singularity-containers:bbmap_38.00'
@@ -63,12 +65,10 @@ salmon_container = 'docker://combinelab/salmon:latest'
 #########
 # SETUP #
 #########
-# generate name to filename dictionary
-all_fastq = find_read_files(read_dir)
 
-sample_key = pandas.read_csv(sample_key_file)
+#sample_key = pandas.read_csv(sample_key_file)
 
-all_samples = sorted(set(sample_key['Sample_name']))
+#all_samples = sorted(set(sample_key['Sample_name']))
 
 #########
 # RULES #
@@ -199,7 +199,7 @@ rule bbduk_trim:
         r1 = 'output/bbduk_trim/{sample}_r1.fq.gz',
         r2 = 'output/bbduk_trim/{sample}_r2.fq.gz'
     params:
-        adapters = bbduk_adapters
+        adapters = '/adapters.fa'
     log:
         'output/logs/bbduk_trim/{sample}.log'
     threads:
@@ -225,6 +225,10 @@ rule cat_reads:
     threads:
         1
     shell:
-        'cat {input.r1} > {output.r1} & '
-        'cat {input.r2} > {output.r2} & '
+        'cat {input.l1r1} {input.l2r1} > {output.r1} & '
+        'cat {input.l1r2} {input.l2r2} > {output.r2} & '
         'wait'
+
+##OG file with seuqencing for this project in different structure - two folders
+##folder with small files is a small miseq run
+##folder with large files are standard hiseq files to be used for analysis
