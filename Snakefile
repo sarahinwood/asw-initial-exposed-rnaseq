@@ -11,6 +11,7 @@ import peppy
 def get_reads(wildcards):
     input_keys = ['l1r1', 'l2r1', 'l1r2', 'l2r2']
     my_pep = pep.get_sample(wildcards.sample).to_dict()
+    print(my_pep)
     return {k: my_pep[k] for k in input_keys}
 
 ###########
