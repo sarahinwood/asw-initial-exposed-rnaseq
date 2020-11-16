@@ -4,7 +4,7 @@ sample_modifiers:
   derive:
     attributes: [l1r1, l2r1, l1r2, l2r2]
     sources:
-      data1: 'data/reads/HJFFNBCX3/{OGF_lib_ID}_L001-ds.{lane1_hash}/{OGF_lib_ID}_S{sample_number}_L001_R1_001.fastq.gz'
+      data1: "data/reads/HJFFNBCX3/{OGF_lib_ID}_L001-ds.{lane1_hash}/{OGF_lib_ID}_S{sample_number}_L001_R1_001.fastq.gz"
       data2: 'data/reads/HJFFNBCX3/{OGF_lib_ID}_L002-ds.{lane2_hash}/{OGF_lib_ID}_S{sample_number}_L002_R1_001.fastq.gz'
       data3: 'data/reads/HJFFNBCX3/{OGF_lib_ID}_L001-ds.{lane1_hash}/{OGF_lib_ID}_S{sample_number}_L001_R2_001.fastq.gz'
       data4: 'data/reads/HJFFNBCX3/{OGF_lib_ID}_L002-ds.{lane2_hash}/{OGF_lib_ID}_S{sample_number}_L002_R2_001.fastq.gz'
