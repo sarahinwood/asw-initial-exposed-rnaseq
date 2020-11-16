@@ -1,4 +1,4 @@
-﻿sample_name,OGF_lib_ID,lane1_hash,lane2_hash,sample_number,Weevil_Location,Treatment,Cleaned,l1r1,l2r1,l1r2,l2r2
+sample_name,OGF_lib_ID,lane1_hash,lane2_hash,sample_number,Weevil_Location,Treatment,Cleaned,l1r1,l2r1,l1r2,l2r2
 IALM_Ex_2,HJFFNBCX3-6199-01-49-1,86e9ca2e40f549f29d957c8ca9ab5cae,82e7f24591a540fb9c1b5dbbd4c9c23f,1,Invermay,Exposed,C,data1,data2,data3,data4
 IALM_Ex_4,HJFFNBCX3-6199-02-49-1,4edb674ee7e34f8f97ec044f34a3b5c8,29ee8c0a46ef43058a41495efc9e71f2,2,Invermay,Exposed,C,data1,data2,data3,data4
 IALM_Ex_5,HJFFNBCX3-6199-03-49-1,b82885c68c33434fb00d4111aaa39066,ce90c22f4e6c44758c1d1ef6eedd0ff7,3,Invermay,Exposed,N,data1,data2,data3,data4
