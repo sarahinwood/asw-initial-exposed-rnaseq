@@ -11,7 +11,6 @@ import peppy
 def get_reads(wildcards):
     input_keys = ['l1r1', 'l2r1', 'l1r2', 'l2r2']
     my_pep = pep.get_sample(wildcards.sample).to_dict()
-    print(my_pep)
     return {k: my_pep[k] for k in input_keys}
 
 ###########
@@ -24,18 +23,9 @@ pepfile: 'data/config.yaml'
 all_samples = pep.sample_table['sample_name']
 
 #containers
-bbduk_container = 'shub://TomHarrop/singularity-containers:bbmap_38.00'
-tom_salmon_container = 'shub://TomHarrop/singularity-containers:salmon_0.11.1'
-##try and see whether salmon works off docker
+bbduk_container = 'shub://TomHarrop/seq-utils:bbmap_38.76'
 salmon_container = 'docker://combinelab/salmon:latest'
-
-#########
-# SETUP #
-#########
-
-#sample_key = pandas.read_csv(sample_key_file)
-
-#all_samples = sorted(set(sample_key['Sample_name']))
+bioconductor_container = 'shub://TomHarrop/r-containers:bioconductor_3.11'
 
 #########
 # RULES #
@@ -46,14 +36,42 @@ rule target:
         expand('output/asw_salmon/{sample}_quant/quant.sf', sample=all_samples),
         expand('output/asw_mh_concat_salmon/{sample}_quant/quant.sf', sample=all_samples),
         'output/fastqc',
+        'output/deseq2/asw_dual/asw_dual_dds.rds',
+        'output/deseq2/mh_dual/mh_dual_dds.rds'
 
 ############################
 ## map to asw/mh combined ##
 ############################
 
+rule mh_dual_dds:
+	input:
+		mh_gene_trans_map = 'data/mh_edited_transcript_ids/Trinity.fasta.gene_trans_map',
+		quant_files = expand('output/asw_mh_concat_salmon/{sample}_quant/quant.sf', sample=all_samples)
+	output:
+		mh_dds = 'output/deseq2/mh_dual/mh_dual_dds.rds'
+	singularity:
+		bioconductor_container
+	log:
+		'output/logs/mh_dual_dds.log'
+	script:
+		'src/dual_species/mh/make_mh_dds.R'
+
+rule asw_dual_dds:
+	input:
+		asw_gene_trans_map = 'data/asw_edited_transcript_ids/Trinity.fasta.gene_trans_map',
+		quant_files = expand('output/asw_mh_concat_salmon/{sample}_quant/quant.sf', sample=all_samples)
+	output:
+		asw_dds = 'output/deseq2/asw_dual/asw_dual_dds.rds'
+	singularity:
+		bioconductor_container
+	log:
+		'output/logs/asw_dual_dds.log'
+	script:
+		'src/dual_species/asw/make_asw_dds.R'
+
 rule asw_mh_concat_salmon_quant:
     input:
-        index_output = 'output/asw_mh_concat_salmon/transcripts_index/hash.bin',
+        index_output = 'output/asw_mh_concat_salmon/transcripts_index/refseq.bin',
         left = 'output/bbduk_trim/{sample}_r1.fq.gz',
         right = 'output/bbduk_trim/{sample}_r2.fq.gz'
     output:
@@ -82,7 +100,7 @@ rule asw_mh_concat_salmon_index:
     input:
         transcriptome_length_filtered = 'data/asw_mh_transcriptome/asw_mh_isoforms_by_length.fasta'
     output:
-        'output/asw_mh_concat_salmon/transcripts_index/hash.bin'
+        'output/asw_mh_concat_salmon/transcripts_index/refseq.bin'
     params:
         outdir = 'output/asw_mh_concat_salmon/transcripts_index'
     threads:
@@ -104,7 +122,7 @@ rule asw_mh_concat_salmon_index:
 
 rule asw_salmon_quant:
     input:
-        index_output = 'output/asw_salmon/transcripts_index/hash.bin',
+        index_output = 'output/asw_salmon/transcripts_index/refseq.bin',
         trimmed_r1 = 'output/bbduk_trim/{sample}_r1.fq.gz',
         trimmed_r2 = 'output/bbduk_trim/{sample}_r2.fq.gz'
     output:
@@ -132,7 +150,7 @@ rule asw_salmon_index:
     input:
         transcriptome_length_filtered = 'data/asw-transcriptome/output/trinity_filtered_isoforms/isoforms_by_length.fasta'
     output:
-        'output/asw_salmon/transcripts_index/hash.bin'
+        'output/asw_salmon/transcripts_index/refseq.bin'
     params:
         outdir = 'output/asw_salmon/transcripts_index'
     threads:
@@ -147,6 +165,10 @@ rule asw_salmon_index:
         '-i {params.outdir} '
         '-p {threads} '
         '&> {log}'
+
+######################
+## prep for mapping ##
+######################
 
 rule fastqc:
     input:
@@ -183,6 +205,7 @@ rule bbduk_trim:
         'ktrim=r k=23 mink=11 hdist=1 tpe tbo qtrim=r trimq=15 '
         '&> {log}'
 
+##zcat for compressed files
 rule join_reads:
     input:
         unpack(get_reads)
@@ -190,8 +213,8 @@ rule join_reads:
         r1 = temp('output/joined/{sample}_r1.fq.gz'),
         r2 = temp('output/joined/{sample}_r2.fq.gz'),
     shell:
-        'zcat {input.l1r1} {input.l2r1} >> {output.r1} & '
-        'zcat {input.l1r2} {input.l2r2} >> {output.r2} & '
+        'cat {input.l1r1} {input.l2r1} > {output.r1} & '
+        'cat {input.l1r2} {input.l2r2} > {output.r2} & '
         'wait'
 
 ##OG file with sequencing for this project in different structure - two folders

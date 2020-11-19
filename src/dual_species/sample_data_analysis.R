@@ -27,6 +27,7 @@ mh_dds$group <- factor(paste(mh_dds$Treatment))
 
 ##plot counts for PCR target gene
 plotCounts(mh_dds, "MH_TRINITY_DN1053_c1_g1", intgroup = c("group"))
+##kilA - MH_TRINITY_DN11733_c0_g1
 
 ##PCA
 mh_vst <- varianceStabilizingTransformation(mh_dds, blind=TRUE)
