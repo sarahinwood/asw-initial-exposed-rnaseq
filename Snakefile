@@ -1,7 +1,4 @@
 #!/usr/bin/env python3
-import pathlib2
-import os
-import pandas
 import peppy
 
 #############
@@ -108,7 +105,7 @@ rule mh_dual_dds:
         mh_gene_trans_map = 'data/asw-mh-combined-transcriptome/output/mh_edited_transcript_ids/Trinity.fasta.gene_trans_map',
         quant_files = expand('output/asw_mh_concat_salmon/{sample}_quant/quant.sf', sample=all_samples)
     output:
-        asw_dds = 'output/deseq2/mh_dual/mh_dual_dds.rds'
+        mh_dds = 'output/deseq2/mh_dual/mh_dual_dds.rds'
     singularity:
         bioconductor_container
     log:

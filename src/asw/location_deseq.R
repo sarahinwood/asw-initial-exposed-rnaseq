@@ -3,6 +3,7 @@ library(data.table)
 library(DESeq2)
 
 asw_dds <- readRDS("output/deseq2/asw/asw_dds.rds")
+trinotate <- fread("data/asw-transcriptome/output/trinotate/sorted/best_annot_per_gene.csv")
 
 asw_dds$location <- factor(paste(asw_dds$Weevil_Location))
 asw_dds_location <- copy(asw_dds)
@@ -14,11 +15,10 @@ res_group <- results(asw_dds_location, contrast = c("location", "Ruakura", "Inve
 ordered_res_group <- res_group[order(res_group$padj),]
 ##Make data table and write to output
 ordered_res_group_table <- data.table(data.frame(ordered_res_group), keep.rownames = TRUE)
-ordered_sig_res_group_table <- subset(ordered_res_group_table, padj < 0.1)
-
-trinotate <- fread("data/asw-transcriptome/output/trinotate/sorted/best_annot_per_gene.csv")
+ordered_sig_res_group_table <- subset(ordered_res_group_table, padj < 0.05)
 sig_annots <- merge(ordered_sig_res_group_table, trinotate, by.x="rn", by.y="#gene_id", all.x=TRUE)
-fwrite(sig_annots, "output/deseq2/asw/location_pairwise/sig_w_annots.csv")
+fwrite(sig_annots, "output/deseq2/asw/location/sig_w_annots.csv")
+saveRDS(asw_dds_location, "output/deseq2/asw/location/asw_dds_location.rds")
 
 plotCounts(asw_dds_location, "", intgroup = c("location"), main="")
 
