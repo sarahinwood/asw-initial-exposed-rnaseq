@@ -1,4 +1,3 @@
-library(tximport)
 library(data.table)
 library(DESeq2)
 
@@ -11,6 +10,12 @@ design(asw_dds_exposed) <- ~treatment
 asw_dds_exposed <- DESeq(asw_dds_exposed)
 
 res_group <- results(asw_dds_exposed, contrast = c("treatment", "Exposed", "NC"), lfcThreshold = 1, alpha = 0.1)
+##Order based of padj
+ordered_res_group <- res_group[order(res_group$padj),]
+##Make data table and write to output
+ordered_res_group_table <- data.table(data.frame(ordered_res_group), keep.rownames = TRUE)
+fwrite(ordered_res_group_table, "output/deseq2/asw/exposed/res_group.csv")
+
 ##Order based of padj
 ordered_res_group <- res_group[order(res_group$padj),]
 ##Make data table and write to output

@@ -1,4 +1,3 @@
-library(tximport)
 library(data.table)
 library(DESeq2)
 
@@ -20,10 +19,12 @@ res_group <- results(dds_WT_asw, alpha=0.05)
 summary(res_group)
 ordered_res_group <- res_group[order(res_group$padj),]
 ordered_res_group_table <- data.table(data.frame(ordered_res_group), keep.rownames = TRUE)
+fwrite(ordered_res_group_table, "output/deseq2/asw/location_exposure_pc1_int/res_group.csv")
+##sig degs
 ordered_sig_res_group_table <- subset(ordered_res_group_table, padj < 0.05)
 sig_annots <- merge(trinotate, ordered_sig_res_group_table, by.x="#gene_id", by.y="rn", all.y=TRUE)
-fwrite(sig_annots, "output/deseq2/asw/location_exposure_int/pc1_sig_w_annots.csv")
-saveRDS(dds_WT_asw, "output/deseq2/asw/location_exposure_int/dds_pc1sign.rds")
+fwrite(sig_annots, "output/deseq2/asw/location_exposure_pc1_int/pc1_sig_w_annots.csv")
+saveRDS(dds_WT_asw, "output/deseq2/asw/location_exposure_pc1_int/dds_pc1sign.rds")
 
 ##plot counts for genes of interest, sub in name
 plotCounts(dds_WT_asw, "TRINITY_DN9423_c0_g1", intgroup = c("location", "treatment"))

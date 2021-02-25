@@ -36,11 +36,11 @@ pos_ordered_sig_res_group_table <- subset(pos_ordered_res_group_table, padj < 0.
 pos_sig_annots <- merge(pos_ordered_sig_res_group_table, trinotate, by.x="rn", by.y="#gene_id", all.x=TRUE)
 fwrite(pos_sig_annots, "output/deseq2/asw/exposed_pc1_pairwise/PC1_positive_sig_w_annots.csv")
 
-saveRDS(asw_dds, "output/deseq2/asw/exposed_pc1_pairwise/asw_dds.rds")
-
 ##overlap of DEGs from both analyses
 vd <- venn.diagram(x = list("Negative"=neg_sig_annots$rn, "Positive"=pos_sig_annots$rn), filename=NULL, cex = 1, cat.cex=1, lwd=1,)
 grid.newpage()
 grid.draw(vd)
+
+saveRDS(asw_dds, "output/deseq2/asw/exposed_pc1_pairwise/asw_dds.rds")
 
 plotCounts(asw_dds_location, "", intgroup = c("location"), main="")

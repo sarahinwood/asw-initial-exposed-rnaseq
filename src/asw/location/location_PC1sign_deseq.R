@@ -1,6 +1,7 @@
 library(tximport)
 library(data.table)
 library(DESeq2)
+library(VennDiagram)
 
 asw_dds <- readRDS("output/deseq2/asw/asw_dds.rds")
 trinotate <- fread("data/asw-transcriptome/output/trinotate/sorted/longest_isoform_annots.csv")
@@ -35,6 +36,11 @@ pos_ordered_res_group_table <- data.table(data.frame(pos_ordered_res_group), kee
 pos_ordered_sig_res_group_table <- subset(pos_ordered_res_group_table, padj < 0.05)
 pos_sig_annots <- merge(pos_ordered_sig_res_group_table, trinotate, by.x="rn", by.y="#gene_id", all.x=TRUE)
 fwrite(pos_sig_annots, "output/deseq2/asw/location_pc1_pairwise/PC1_positive_sig_w_annots.csv")
+
+##overlap of DEGs from both analyses
+vd <- venn.diagram(x = list("Negative"=neg_sig_annots$rn, "Positive"=pos_sig_annots$rn), filename=NULL, cex = 1, cat.cex=1, lwd=1,)
+grid.newpage()
+grid.draw(vd)
 
 saveRDS(asw_dds_location, "output/deseq2/asw/location/asw_dds_pc1_location.rds")
 
