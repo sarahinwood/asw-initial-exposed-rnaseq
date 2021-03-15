@@ -1,18 +1,8 @@
-#!/usr/bin/env Rscript
+library(tximport)
+library(data.table)
+library(DESeq2)
 
-log <- file(snakemake@log[[1]],
-            open = "wt")
-sink(log,
-     type = "message")
-sink(log,
-     append = TRUE,
-     type = "output")
-
-library("tximport")
-library("data.table")
-library("DESeq2")
-
-mh_gene_trans_map <- snakemake@input[['mh_gene_trans_map']]
+mh_gene_trans_map <- "data/asw-mh-combined-transcriptome/output/mh_edited_transcript_ids/Trinity.fasta.gene_trans_map"
 
 gene2tx <- fread(mh_gene_trans_map, header = FALSE)
 tx2gene <- data.frame(gene2tx[, .(V2, V1)])
@@ -31,8 +21,5 @@ setkey(sample_data, sample_name)
 ##create dds object and link to sample data  
 dds <- DESeqDataSetFromTximport(txi, colData = sample_data[colnames(txi$counts)], design = ~1)
 ##save dds object
-mh_dds <- snakemake@output[['mh_dds']]
+mh_dds <- "output/deseq2/mh_dual/mh_dual_dds.rds"
 saveRDS(dds, mh_dds)
-
-# log
-sessionInfo()

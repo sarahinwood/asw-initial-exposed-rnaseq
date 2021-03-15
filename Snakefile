@@ -39,32 +39,6 @@ rule target:
 ## map to asw-mh concat transcriptome ##
 ########################################
 
-rule mh_dual_dds:
-    input:
-        mh_gene_trans_map = 'data/asw-mh-combined-transcriptome/output/mh_edited_transcript_ids/Trinity.fasta.gene_trans_map',
-        quant_files = expand('output/asw_mh_concat_salmon/{sample}_quant/quant.sf', sample=all_samples)
-    output:
-        mh_dds = 'output/deseq2/mh_dual/mh_dual_dds.rds'
-    singularity:
-        bioconductor_container
-    log:
-        'output/logs/mh_dual_dds.log'
-    script:
-        'src/dual_species/make_mh_dds.R'
-
-rule asw_dual_dds:
-    input:
-        asw_gene_trans_map = 'data/asw-mh-combined-transcriptome/output/asw_edited_transcript_ids/Trinity.fasta.gene_trans_map',
-        quant_files = expand('output/asw_mh_concat_salmon/{sample}_quant/quant.sf', sample=all_samples)
-    output:
-        asw_dds = 'output/deseq2/asw_dual/asw_dual_dds.rds'
-    singularity:
-        bioconductor_container
-    log:
-        'output/logs/asw_dual_dds.log'
-    script:
-        'src/dual_species/make_asw_dds.R'
-
 rule asw_mh_concat_salmon_quant:
     input:
         index_output = 'output/asw_mh_concat_salmon/transcripts_index/refseq.bin',
