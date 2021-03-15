@@ -6,7 +6,7 @@ import peppy
 #############
 
 def get_reads(wildcards):
-    input_keys = ['l1r1', 'l2r1', 'l1r2', 'l2r2']
+    input_keys = ['r1', 'r2']
     my_pep = pep.get_sample(wildcards.sample).to_dict()
     return {k: my_pep[k] for k in input_keys}
 
@@ -20,7 +20,7 @@ pepfile: 'data/config.yaml'
 all_samples = pep.sample_table['sample_name']
 
 #containers
-bbduk_container = 'shub://TomHarrop/seq-utils:bbmap_38.76'
+bbduk_container = 'shub://TomHarrop/singularity-containers:bbmap_38.00'
 salmon_container = 'docker://combinelab/salmon:latest'
 bioconductor_container = 'shub://TomHarrop/r-containers:bioconductor_3.11'
 
@@ -33,68 +33,7 @@ rule target:
         expand('output/asw_salmon/{sample}_quant/quant.sf', sample=all_samples),
         expand('output/asw_mh_concat_salmon/{sample}_quant/quant.sf', sample=all_samples),
         'output/fastqc',
-        #'output/deseq2/asw_dual/unann/nr_blastx.outfmt3',
-        'output/deseq2/asw_dual/asw_dual_dds.rds',
-        'output/deseq2/mh_dual/mh_dual_dds.rds',
-        'output/deseq2/asw/asw_dds.rds',
         expand('output/joined/{sample}_r1.fq.gz', sample=all_samples)
-
-#####################
-## RNAseq analysis ##
-#####################
-
-rule unann_degs_blastx:
-    input:
-        unann_deg_transcripts = 'output/deseq2/asw_dual/unann/unann_deg_transcripts.fasta'
-    output:
-        blastx_res = 'output/deseq2/asw_dual/unann/nr_blastx.outfmt3'
-    params:
-        blast_db = 'bin/blastdb/nr/nr'
-    threads:
-        50
-    log:
-        'output/logs/unann_degs_blastx.log'
-    shell:
-        'blastx '
-        '-query {input.unann_deg_transcripts} '
-        '-db {params.blast_db} '
-        '-num_threads {threads} '
-        '-evalue 1e-05 '
-        '-outfmt "6 std salltitles" > {output.blastx_res} '
-        '2> {log}'
-
-rule filter_unann_deg_transcripts:
-    input:
-        dual_transcriptome = 'data/asw_mh_transcriptome/asw_mh_isoforms_by_length.fasta',
-        transcript_hit_ids = 'output/deseq2/asw_dual/unann/unann_degs_list.txt'
-    output:
-        unann_deg_transcripts = 'output/deseq2/asw_dual/unann/unann_deg_transcripts.fasta'
-    singularity:
-        bbduk_container
-    log:
-        'output/logs/filter_unann_deg_transcripts.log'
-    shell:
-        'filterbyname.sh '
-        'in={input.dual_transcriptome} '
-        'include=t '
-        'names={input.transcript_hit_ids} '
-        'substring=name '
-        'out={output.unann_deg_transcripts} '
-        '&> {log}'
-
-rule ID_unann_DEGs_dual:
-    input:
-        asw_dds = 'output/deseq2/asw_dual/asw_dual_dds.rds',
-        loc_ex_int_degs = 'output/deseq2/asw_dual/location_exposure_int/sig_w_annots.csv',
-        loc_degs = 'output/deseq2/asw_dual/location_pairwise/sig_w_annots.csv'
-    output:
-        unann_degs_list = 'output/deseq2/asw_dual/unann/unann_degs_list.txt'
-    singularity:
-        bioconductor_container
-    log:
-        'output/logs/ID_unann_DEGs_dual.log'
-    script:
-        'src/dual_species/asw/filter_unann_degs.R'
 
 ########################################
 ## map to asw-mh concat transcriptome ##
@@ -283,8 +222,8 @@ rule join_reads:
         r1 = 'output/joined/{sample}_r1.fq.gz',
         r2 = 'output/joined/{sample}_r2.fq.gz',
     shell:
-        'cat {input.l1r1} {input.l2r1} > {output.r1} & '
-        'cat {input.l1r2} {input.l2r2} > {output.r2} & '
+        'cat {input.r1} > {output.r1} & '
+        'cat {input.r2} > {output.r2} & '
         'wait'
 
 ##OG file with sequencing for this project in different structure - two folders
