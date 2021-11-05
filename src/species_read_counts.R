@@ -24,3 +24,5 @@ total_reads_and_counts$`mh/total_reads` <- ((total_reads_and_counts$reads_mapped
 total_reads_and_counts$`asw/total_reads` <- ((total_reads_and_counts$reads_mapped_ASW/total_reads_and_counts$half_reads_out_bbduk)*100)
 fwrite(total_reads_and_counts, "output/deseq2/asw_dual/total_reads_and_counts.csv")
 
+ggplot(total_reads_and_counts, aes)
+

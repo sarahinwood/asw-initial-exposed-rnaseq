@@ -25,7 +25,7 @@ ggplot(pca_plot, aes(x=PC1, y=PC2, color=Treatment))+
   xlab(paste("PC1:", percentVar[1], "% variance")) + 
   ylab(paste("PC2:", percentVar[2], "% variance")) + 
   coord_fixed()+
-  theme_classic()
+  theme_bw()
 
 
 ##plot counts for PCR target gene
@@ -54,7 +54,7 @@ ggplot(pca_plot, aes(x=PC1, y=PC2, color=abdomen_parasitism_status))+
   xlab(paste("PC1:", percentVar[1], "% variance")) + 
   ylab(paste("PC2:", percentVar[2], "% variance")) + 
   coord_fixed()+
-  theme_classic()
+  theme_bw()
 
 ##plot counts for PCR target gene
 pcr_counts <- plotCounts(mh_dds, "MH_TRINITY_DN1053_c1_g1", intgroup = c("group"), returnData = TRUE)
@@ -62,6 +62,6 @@ ggplot(pcr_counts, aes(x=group, y=count))+
   geom_point(size=3, alpha=0.7, color="#440154FF")+
   xlab("Parasitism status")+
   ylab("Normalised count")+
-  theme_classic()
+  theme_bw()
 
 ##kilA - MH_TRINITY_DN11733_c0_g1

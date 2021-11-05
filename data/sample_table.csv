@@ -1,6 +1,6 @@
-sample_name,abdomen_parasitism_status,sample_number,parasitoid_location,Weevil_Location,Treatment,Tissue,r1,r2,OGF_lib_ID
-R1_NC_H,not_detected,01,Ruakura,Ruakura,NC,Head,data1,data2,CCU1EANXX-3897-01-21-1_S123
-R1_Ex_H,not_detected,03,Ruakura,Ruakura,Exposed,Head,data1,data2,CCU1EANXX-3897-03-21-1_S125
-L1_Ex_H,parasitised,08,Lincoln,Ruakura,Exposed,Head,data1,data2,CCU1EANXX-3897-08-21-1_S130
-L2_NC_H,not_detected,12,Lincoln,Ruakura,NC,Head,data1,data2,CCU1EANXX-3897-12-21-1_S134
-L2_Ex_H,parasitised,14,Lincoln,Ruakura,Exposed,Head,data1,data2,CCU1EANXX-3897-14-21-1_S136
+sample_name,abdomen_parasitism_status,sample_number,parasitoid_location,Weevil_Location,Treatment,Tissue,RIN,r1,r2,OGF_lib_ID
+R1_NC_H,not_detected,1,Ruakura,Ruakura,NC,Head,6.4,data1,data2,CCU1EANXX-3897-01-21-1_S123
+R1_Ex_H,not_detected,3,Ruakura,Ruakura,Exposed,Head,5.7,data1,data2,CCU1EANXX-3897-03-21-1_S125
+L1_Ex_H,parasitised,8,Lincoln,Ruakura,Exposed,Head,NA,data1,data2,CCU1EANXX-3897-08-21-1_S130
+L2_NC_H,not_detected,12,Lincoln,Ruakura,NC,Head,6.4,data1,data2,CCU1EANXX-3897-12-21-1_S134
+L2_Ex_H,parasitised,14,Lincoln,Ruakura,Exposed,Head,6.4,data1,data2,CCU1EANXX-3897-14-21-1_S136
